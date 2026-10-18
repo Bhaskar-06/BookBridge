@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}My listings{% endblock %}
+{% block content %}
+<div class="page-head"><div class="container d-flex justify-content-between align-items-center">
+  <h1 class="h2 mb-0">My listings</h1>
+  <a href="{{ url_for('book_new') }}" class="btn btn-warning"><i class="bi bi-plus-lg me-1"></i>Sell a book</a>
+</div></div>
+<div class="container py-4">
+  {% if books %}
+    <div class="card shadow-sm"><div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead class="table-light"><tr><th>Book</th><th>Price</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+        {% for b in books %}
+          <tr>
+            <td><a href="{{ url_for('book_detail', book_id=b.id) }}" class="fw-semibold text-decoration-none">{{ b.title }}</a>
+                <div class="small text-muted">{{ b.author }}</div></td>
+            <td>₹{{ b.price }}</td>
+            <td><span class="badge bg-{{ 'success' if b.status == 'available' else 'secondary' }}">{{ b.status }}</span></td>
+            <td class="text-end text-nowrap">
+              <a href="{{ url_for('book_edit', book_id=b.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+              <form action="{{ url_for('book_status', book_id=b.id) }}" method="post" class="d-inline">
+                <button class="btn btn-sm btn-outline-secondary">{{ 'Mark sold' if b.status == 'available' else 'Mark available' }}</button></form>
+              <form action="{{ url_for('book_delete', book_id=b.id) }}" method="post" class="d-inline" onsubmit="return confirm('Delete this listing permanently?')">
+                <button class="btn btn-sm btn-outline-danger">Delete</button></form>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div></div>
+  {% else %}
+    <div class="empty-state text-center py-5">
+      <i class="bi bi-journal-plus display-3 text-muted"></i>
+      <p class="mt-3 text-muted">You haven't listed any books yet.</p>
+      <a href="{{ url_for('book_new') }}" class="btn btn-primary">List your first book</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

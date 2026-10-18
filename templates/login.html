@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Log in{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+{% block content %}
+<div class="auth-wrap"><div class="auth-card shadow-lg">
+  <div class="text-center mb-4">
+    <i class="bi bi-book-half auth-logo"></i>
+    <h1 class="h3 mt-2 mb-1 brand-dark">Welcome back</h1>
+    <p class="text-muted mb-0">Log in to your BookBridge account</p>
+  </div>
+  {% if error %}<div class="alert alert-danger py-2">{{ error }}</div>{% endif %}
+  <form method="post" novalidate>
+    <div class="mb-3"><label class="form-label" for="email">Email</label>
+      <div class="input-group"><span class="input-group-text"><i class="bi bi-envelope"></i></span>
+        <input class="form-control" type="email" id="email" name="email" required autofocus value="{{ form.email or '' }}" autocomplete="email"></div></div>
+    <div class="mb-4"><label class="form-label" for="password">Password</label>
+      <div class="input-group"><span class="input-group-text"><i class="bi bi-lock"></i></span>
+        <input class="form-control" type="password" id="password" name="password" required autocomplete="current-password"></div></div>
+    <button class="btn btn-primary w-100 py-2" type="submit">Log in</button>
+  </form>
+  <p class="text-center mt-4 mb-0">New to BookBridge? <a href="{{ url_for('register') }}" class="fw-semibold">Create an account</a></p>
+</div></div>
+{% endblock %}

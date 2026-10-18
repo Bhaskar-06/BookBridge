@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Create account{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+{% block content %}
+<div class="auth-wrap"><div class="auth-card shadow-lg">
+  <div class="text-center mb-4">
+    <i class="bi bi-person-plus-fill auth-logo"></i>
+    <h1 class="h3 mt-2 mb-1 brand-dark">Create your account</h1>
+    <p class="text-muted mb-0">Join BookBridge to buy and sell books</p>
+  </div>
+  {% if error %}<div class="alert alert-danger py-2">{{ error }}</div>{% endif %}
+  <form method="post" novalidate>
+    <div class="mb-3"><label class="form-label" for="name">Full name</label>
+      <input class="form-control" id="name" name="name" required maxlength="80" value="{{ form.name or '' }}" autocomplete="name"></div>
+    <div class="mb-3"><label class="form-label" for="email">Email</label>
+      <input class="form-control" type="email" id="email" name="email" required value="{{ form.email or '' }}" autocomplete="email"></div>
+    <div class="mb-3"><label class="form-label" for="phone">Phone <span class="text-muted small">(optional)</span></label>
+      <input class="form-control" id="phone" name="phone" maxlength="15" value="{{ form.phone or '' }}" autocomplete="tel"></div>
+    <div class="row g-3 mb-4">
+      <div class="col-sm-6"><label class="form-label" for="password">Password</label>
+        <input class="form-control" type="password" id="password" name="password" required minlength="6" autocomplete="new-password"></div>
+      <div class="col-sm-6"><label class="form-label" for="confirm">Confirm</label>
+        <input class="form-control" type="password" id="confirm" name="confirm" required minlength="6" autocomplete="new-password"></div>
+    </div>
+    <button class="btn btn-primary w-100 py-2" type="submit">Create account</button>
+  </form>
+  <p class="text-center mt-4 mb-0">Already a member? <a href="{{ url_for('login') }}" class="fw-semibold">Log in</a></p>
+</div></div>
+{% endblock %}

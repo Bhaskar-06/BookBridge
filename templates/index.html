@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import card %}
+{% block content %}
+<section class="hero">
+  <div class="container text-center text-white">
+    <h1 class="display-4 fw-bold">Give books a <span class="text-warning">second story</span></h1>
+    <p class="lead mb-4">Buy and sell used books at great prices. Chat directly with sellers and find your next read.</p>
+    <form action="{{ url_for('browse') }}" method="get" class="hero-search mx-auto">
+      <div class="input-group input-group-lg shadow">
+        <input type="search" name="q" class="form-control" placeholder="Search by title or author..." aria-label="Search books">
+        <button class="btn btn-warning px-4" type="submit"><i class="bi bi-search me-1"></i> Search</button>
+      </div>
+    </form>
+    <div class="mt-4 d-flex justify-content-center gap-4 small">
+      <span><i class="bi bi-book-fill text-warning me-1"></i><strong>{{ total_books }}</strong> books available</span>
+      <span><i class="bi bi-people-fill text-warning me-1"></i><strong>{{ total_users }}</strong> members</span>
+    </div>
+  </div>
+</section>
+
+<section class="container py-5">
+  <h2 class="section-title text-center">Browse by category</h2>
+  <div class="d-flex flex-wrap justify-content-center gap-2">
+    {% for c in categories %}
+      <a href="{{ url_for('browse', category=c) }}" class="btn btn-outline-dark rounded-pill px-3">{{ c }}</a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="container pb-4">
+  <div class="d-flex justify-content-between align-items-end mb-3">
+    <h2 class="section-title mb-0">Latest listings</h2>
+    <a href="{{ url_for('browse') }}" class="text-decoration-none fw-semibold">View all <i class="bi bi-arrow-right"></i></a>
+  </div>
+  {% if latest %}
+    <div class="row g-4">
+      {% for b in latest %}<div class="col-6 col-md-4 col-lg-3">{{ card(b) }}</div>{% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state text-center py-5">
+      <i class="bi bi-journal-x display-3 text-muted"></i>
+      <p class="mt-3 text-muted">No books listed yet. Be the first to sell one!</p>
+      <a href="{{ url_for('book_new') }}" class="btn btn-primary">Sell a book</a>
+    </div>
+  {% endif %}
+</section>
+
+<section class="container py-5">
+  <h2 class="section-title text-center">How it works</h2>
+  <div class="row g-4 text-center">
+    <div class="col-md-4"><div class="step"><i class="bi bi-person-plus-fill"></i><h3 class="h5">1. Create an account</h3><p class="text-muted mb-0">Sign up free in less than a minute.</p></div></div>
+    <div class="col-md-4"><div class="step"><i class="bi bi-search-heart-fill"></i><h3 class="h5">2. Find or list a book</h3><p class="text-muted mb-0">Search thousands of titles or list your own.</p></div></div>
+    <div class="col-md-4"><div class="step"><i class="bi bi-chat-heart-fill"></i><h3 class="h5">3. Chat &amp; deal</h3><p class="text-muted mb-0">Message the seller and agree on the details.</p></div></div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit book' if book.id else 'Sell a book' }}{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center"><div class="col-lg-8">
+    <div class="card shadow-sm"><div class="card-body p-4 p-md-5">
+      <h1 class="h3 mb-1">{{ 'Edit your listing' if book.id else 'Sell a book' }}</h1>
+      <p class="text-muted mb-4">Add clear details and a photo to sell faster.</p>
+      {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+
+      <form method="post" enctype="multipart/form-data">
+        <div class="row g-3">
+          <div class="col-md-7"><label class="form-label" for="title">Title *</label>
+            <input class="form-control" id="title" name="title" maxlength="150" required value="{{ book.title }}"></div>
+          <div class="col-md-5"><label class="form-label" for="author">Author *</label>
+            <input class="form-control" id="author" name="author" maxlength="100" required value="{{ book.author }}"></div>
+          <div class="col-md-4"><label class="form-label" for="category">Category *</label>
+            <select class="form-select" id="category" name="category" required>
+              <option value="">Choose...</option>
+              {% for c in categories %}<option {{ 'selected' if book.category == c }}>{{ c }}</option>{% endfor %}
+            </select></div>
+          <div class="col-md-4"><label class="form-label" for="condition">Condition *</label>
+            <select class="form-select" id="condition" name="condition" required>
+              <option value="">Choose...</option>
+              {% for c in conditions %}<option {{ 'selected' if book.condition == c }}>{{ c }}</option>{% endfor %}
+            </select></div>
+          <div class="col-md-4"><label class="form-label" for="price">Price (₹) *</label>
+            <input class="form-control" id="price" name="price" type="number" min="0" max="100000" required value="{{ book.price }}"></div>
+          <div class="col-12"><label class="form-label" for="description">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="4" maxlength="1000" placeholder="Edition, year, any markings or damage...">{{ book.description or '' }}</textarea></div>
+          <div class="col-12"><label class="form-label" for="image">Cover photo (JPG, PNG or WEBP, max 2 MB)</label>
+            <input class="form-control" id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp">
+            {% if book.id %}<div class="form-text">Leave empty to keep the current photo.</div>{% endif %}</div>
+        </div>
+        <div class="mt-4 d-flex gap-2">
+          <button class="btn btn-primary px-4" type="submit">{{ 'Save changes' if book.id else 'List my book' }}</button>
+          <a href="{{ url_for('book_detail', book_id=book.id) if book.id else url_for('browse') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div></div>
+  </div></div>
+</div>
+{% endblock %}

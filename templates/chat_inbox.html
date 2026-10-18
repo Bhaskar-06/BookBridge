@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Messages{% endblock %}
+{% block content %}
+<div class="page-head"><div class="container"><h1 class="h2 mb-0">Messages</h1></div></div>
+<div class="container py-4">
+  {% if conversations %}
+    <div class="list-group shadow-sm">
+      {% for c in conversations %}
+        <a href="{{ url_for('chat_room', book_id=c.book_id, other_id=c.other_id) }}" class="list-group-item list-group-item-action py-3">
+          <div class="d-flex align-items-center">
+            <div class="avatar avatar-sm me-3">{{ c.other_name[0]|upper }}</div>
+            <div class="flex-grow-1 min-w-0">
+              <div class="d-flex justify-content-between">
+                <strong>{{ c.other_name }}</strong>
+                <small class="text-muted" data-date="{{ c.created_at }}" data-short="1"></small>
+              </div>
+              <div class="small text-muted"><i class="bi bi-book me-1"></i>{{ c.title }}</div>
+              <div class="text-truncate {{ 'fw-semibold' if c.unread else 'text-muted' }}">{{ 'You: ' if c.sender_id == user.id }}{{ c.body }}</div>
+            </div>
+            {% if c.unread %}<span class="badge rounded-pill bg-danger ms-3">{{ c.unread }}</span>{% endif %}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state text-center py-5">
+      <i class="bi bi-chat-square-dots display-3 text-muted"></i>
+      <p class="mt-3 text-muted">No conversations yet. Open a book and click <strong>Chat with seller</strong>.</p>
+      <a href="{{ url_for('browse') }}" class="btn btn-primary">Browse books</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

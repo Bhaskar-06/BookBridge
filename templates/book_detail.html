@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import card %}
+{% block title %}{{ book.title }}{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('browse', category=book.category) }}">{{ book.category }}</a></li>
+      <li class="breadcrumb-item active">{{ book.title }}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-4">
+    <div class="col-md-5 col-lg-4">
+      <div class="detail-cover shadow-sm">
+        {% if book.has_image %}
+          <img src="{{ url_for('book_image', book_id=book.id) }}" alt="Cover of {{ book.title }}">
+        {% else %}
+          <div class="cover-placeholder"><i class="bi bi-book"></i></div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="col-md-7 col-lg-8">
+      <span class="badge bg-light text-dark border mb-2">{{ book.category }}</span>
+      {% if book.status == 'sold' %}<span class="badge bg-secondary mb-2">Sold</span>{% else %}<span class="badge bg-success mb-2">Available</span>{% endif %}
+      <h1 class="h2 fw-bold">{{ book.title }}</h1>
+      <p class="text-muted">by {{ book.author }}</p>
+      <div class="price display-6 mb-3">₹{{ book.price }}</div>
+
+      <ul class="list-unstyled mb-4">
+        <li class="mb-1"><i class="bi bi-stars text-warning me-2"></i>Condition: <strong>{{ book.condition }}</strong></li>
+        <li class="mb-1"><i class="bi bi-person-circle text-warning me-2"></i>Seller: <strong>{{ book.seller }}</strong></li>
+        <li><i class="bi bi-calendar3 text-warning me-2"></i>Listed on <span data-date="{{ book.created_at }}"></span></li>
+      </ul>
+
+      {% if book.description %}
+        <h2 class="h6 text-uppercase text-muted">Description</h2>
+        <p class="pre-line">{{ book.description }}</p>
+      {% endif %}
+
+      <div class="d-flex flex-wrap gap-2 mt-4">
+        {% if user and user.id == book.user_id %}
+          <a href="{{ url_for('book_edit', book_id=book.id) }}" class="btn btn-outline-primary"><i class="bi bi-pencil me-1"></i>Edit listing</a>
+          <a href="{{ url_for('my_books') }}" class="btn btn-outline-secondary">Manage my listings</a>
+        {% elif book.status == 'sold' %}
+          <button class="btn btn-secondary" disabled>This book has been sold</button>
+        {% elif user %}
+          <a href="{{ url_for('chat_room', book_id=book.id, other_id=book.user_id) }}" class="btn btn-primary btn-lg"><i class="bi bi-chat-dots me-2"></i>Chat with seller</a>
+        {% else %}
+          <a href="{{ url_for('login', next=request.path) }}" class="btn btn-primary btn-lg"><i class="bi bi-box-arrow-in-right me-2"></i>Log in to chat with seller</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% if similar %}
+    <h2 class="section-title mt-5">You may also like</h2>
+    <div class="row g-4">
+      {% for b in similar %}<div class="col-6 col-md-3">{{ card(b) }}</div>{% endfor %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
