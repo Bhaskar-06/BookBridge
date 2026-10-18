@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Admin panel{% endblock %}
+{% block content %}
+<div class="page-head"><div class="container"><h1 class="h2 mb-0"><i class="bi bi-shield-check me-2"></i>Admin panel</h1></div></div>
+<div class="container py-4">
+  <div class="d-flex gap-2 mb-4">
+    <a class="btn btn-primary" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('admin_users') }}">Manage users</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('admin_books') }}">Manage books</a>
+  </div>
+
+  <div class="row g-3 mb-4">
+    {% for label, value, icon in [('Users', stats.users, 'people-fill'), ('Books listed', stats.books, 'book-fill'),
+                                   ('Available', stats.available, 'bag-check-fill'), ('Sold', stats.sold, 'cash-coin'),
+                                   ('Messages', stats.messages, 'chat-dots-fill'), ('Reviews', stats.reviews, 'star-fill')] %}
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="card shadow-sm text-center p-3 h-100">
+          <i class="bi bi-{{ icon }} fs-3 text-warning"></i>
+          <div class="h3 mb-0">{{ value }}</div><small class="text-muted">{{ label }}</small>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-6"><div class="card shadow-sm"><div class="card-header bg-white fw-semibold">Newest users</div>
+      <ul class="list-group list-group-flush">
+        {% for u in recent_users %}<li class="list-group-item d-flex justify-content-between"><span>{{ u.name }} <small class="text-muted">{{ u.email }}</small></span><small class="text-muted" data-date="{{ u.created_at }}"></small></li>{% endfor %}
+      </ul></div></div>
+    <div class="col-lg-6"><div class="card shadow-sm"><div class="card-header bg-white fw-semibold">Newest listings</div>
+      <ul class="list-group list-group-flush">
+        {% for b in recent_books %}<li class="list-group-item d-flex justify-content-between"><a href="{{ url_for('book_detail', book_id=b.id) }}" class="text-decoration-none">{{ b.title }}</a><small class="text-muted">{{ b.seller }} · ₹{{ b.price }}</small></li>{% endfor %}
+      </ul></div></div>
+  </div>
+</div>
+{% endblock %}

@@ -42,6 +42,8 @@
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="bi bi-person me-2"></i>My Account</a></li>
               <li><a class="dropdown-item" href="{{ url_for('my_books') }}"><i class="bi bi-journal-bookmark me-2"></i>My Listings</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('wishlist') }}"><i class="bi bi-heart me-2"></i>My Wishlist</a></li>
+              {% if user.is_admin %}<li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}"><i class="bi bi-shield-check me-2"></i>Admin Panel</a></li>{% endif %}
               <li><hr class="dropdown-divider"></li>
               <li><form action="{{ url_for('logout') }}" method="post" class="m-0">
                 <button class="dropdown-item" type="submit"><i class="bi bi-box-arrow-right me-2"></i>Log out</button></form></li>

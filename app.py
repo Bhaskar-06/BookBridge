@@ -5,12 +5,14 @@ from functools import wraps
 
 from flask import (Flask, Response, abort, flash, g, jsonify, redirect,
                    render_template, request, session, url_for)
+from werkzeug.middleware.proxy_fix import ProxyFix 
 from werkzeug.security import check_password_hash, generate_password_hash
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.environ.get("DB_PATH", os.path.join(BASE_DIR, "bookbridge.db"))
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)  # correct https links behind Render
 app.config.update(
     SECRET_KEY=os.environ.get("SECRET_KEY", "dev-secret-change-me"),
     MAX_CONTENT_LENGTH=3 * 1024 * 1024,           # max upload size: 3 MB
@@ -102,7 +104,7 @@ def load_user():
     uid = session.get("user_id")
     if uid:
         g.user = get_db().execute(
-            "SELECT id, name, email, phone FROM users WHERE id = ?", (uid,)).fetchone()
+            "SELECT id, name, email, phone, is_admin FROM users WHERE id = ?", (uid,)).fetchone()
         if g.user is None:
             session.clear()
 
@@ -138,7 +140,7 @@ def not_found(_e):
 
 @app.errorhandler(403)
 def forbidden(_e):
-    return error_page(403, "You can only manage your own listings.")
+    return error_page(403, "You do not have permission to do that.")
 
 
 @app.errorhandler(413)
@@ -553,6 +555,11 @@ def chat_send(book_id, other_id):
     row = db.execute("SELECT id, sender_id, body, created_at FROM messages WHERE id = ?",
                      (cur.lastrowid,)).fetchone()
     return jsonify(dict(row))
+
+
+import features  # wishlist, reviews, admin panel, password recovery
+
+features.init(app, get_db, login_required)
 
 
 if __name__ == "__main__":

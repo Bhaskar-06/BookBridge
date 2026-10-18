@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import card, stars %}
+{% block title %}{{ seller.name }}{% endblock %}
+{% block content %}
+<div class="page-head"><div class="container d-flex align-items-center">
+  <div class="avatar me-3">{{ seller.name[0]|upper }}</div>
+  <div>
+    <h1 class="h2 mb-1">{{ seller.name }}</h1>
+    <div>
+      {% if rating.count %}{{ stars(rating.avg) }} <strong>{{ rating.avg }}</strong> <small>({{ rating.count }} review{{ '' if rating.count == 1 else 's' }})</small>
+      {% else %}<small>No reviews yet</small>{% endif %}
+      <small class="ms-3 opacity-75">Member since <span data-date="{{ seller.created_at }}"></span></small>
+    </div>
+  </div>
+</div></div>
+
+<div class="container py-4">
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <h2 class="h4 section-title">Reviews</h2>
+
+      {% if user and user.id != seller.id %}
+        {% if can_review %}
+          <div class="card shadow-sm mb-4"><div class="card-body">
+            <h3 class="h6">{{ 'Update your review' if my_review else 'Write a review' }}</h3>
+            <form action="{{ url_for('review_submit', seller_id=seller.id) }}" method="post">
+              <label class="form-label small" for="rating">Rating</label>
+              <select class="form-select mb-2" id="rating" name="rating" required>
+                {% for n, label in [(5, '5 - Excellent'), (4, '4 - Good'), (3, '3 - Okay'), (2, '2 - Poor'), (1, '1 - Terrible')] %}
+                  <option value="{{ n }}" {{ 'selected' if my_review and my_review.rating == n }}>{{ label }}</option>
+                {% endfor %}
+              </select>
+              <label class="form-label small" for="comment">Comment (optional)</label>
+              <textarea class="form-control mb-3" id="comment" name="comment" rows="3" maxlength="500" placeholder="How was your experience with this seller?">{{ my_review.comment if my_review else '' }}</textarea>
+              <button class="btn btn-primary" type="submit">Submit review</button>
+            </form>
+          </div></div>
+        {% else %}
+          <div class="alert alert-light border small">Chat with this seller first to leave a review.</div>
+        {% endif %}
+      {% elif not user %}
+        <div class="alert alert-light border small"><a href="{{ url_for('login', next=request.path) }}">Log in</a> to review this seller.</div>
+      {% endif %}
+
+      {% for r in reviews %}
+        <div class="card shadow-sm mb-3"><div class="card-body">
+          <div class="d-flex justify-content-between">
+            <strong>{{ r.reviewer }}</strong>
+            <small class="text-muted" data-date="{{ r.created_at }}"></small>
+          </div>
+          <div class="mb-1">{{ stars(r.rating) }}</div>
+          {% if r.comment %}<p class="mb-1 pre-line">{{ r.comment }}</p>{% endif %}
+          {% if user and (user.id == r.reviewer_id or user.is_admin) %}
+            <form action="{{ url_for('review_delete', review_id=r.id) }}" method="post" onsubmit="return confirm('Delete this review?')">
+              <button class="btn btn-sm btn-link text-danger p-0" type="submit">Delete</button>
+            </form>
+          {% endif %}
+        </div></div>
+      {% else %}
+        <p class="text-muted">No reviews yet.</p>
+      {% endfor %}
+    </div>
+
+    <div class="col-lg-7">
+      <h2 class="h4 section-title">Books from {{ seller.name.split(' ')[0] }}</h2>
+      {% if books %}
+        <div class="row g-4">{% for b in books %}<div class="col-6 col-md-4">{{ card(b) }}</div>{% endfor %}</div>
+      {% else %}
+        <p class="text-muted">No books available right now.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

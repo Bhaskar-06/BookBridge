@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import card %}
+{% block title %}My wishlist{% endblock %}
+{% block content %}
+<div class="page-head"><div class="container"><h1 class="h2 mb-0"><i class="bi bi-heart-fill text-danger me-2"></i>My wishlist</h1></div></div>
+<div class="container py-4">
+  {% if books %}
+    <div class="row g-4">
+      {% for b in books %}
+        <div class="col-6 col-md-4 col-lg-3">
+          {{ card(b) }}
+          <form action="{{ url_for('wishlist_toggle', book_id=b.id) }}" method="post" class="mt-2">
+            <input type="hidden" name="next" value="{{ url_for('wishlist') }}">
+            <button class="btn btn-sm btn-outline-danger w-100" type="submit"><i class="bi bi-heart-break me-1"></i>Remove</button>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state text-center py-5">
+      <i class="bi bi-heart display-3 text-muted"></i>
+      <p class="mt-3 text-muted">Your wishlist is empty. Open a book and click <strong>Save to wishlist</strong>.</p>
+      <a href="{{ url_for('browse') }}" class="btn btn-primary">Browse books</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

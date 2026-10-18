@@ -13,7 +13,8 @@
     <div class="mb-3"><label class="form-label" for="email">Email</label>
       <div class="input-group"><span class="input-group-text"><i class="bi bi-envelope"></i></span>
         <input class="form-control" type="email" id="email" name="email" required autofocus value="{{ form.email or '' }}" autocomplete="email"></div></div>
-    <div class="mb-4"><label class="form-label" for="password">Password</label>
+    <div class="mb-4"><label class="form-label d-flex justify-content-between" for="password">Password
+        <a href="{{ url_for('forgot_password') }}" class="small text-decoration-none">Forgot password?</a></label>
       <div class="input-group"><span class="input-group-text"><i class="bi bi-lock"></i></span>
         <input class="form-control" type="password" id="password" name="password" required autocomplete="current-password"></div></div>
     <button class="btn btn-primary w-100 py-2" type="submit">Log in</button>

@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
-{% from '_macros.html' import card %}
+{% from '_macros.html' import card, stars %}
 {% block title %}{{ book.title }}{% endblock %}
 {% block content %}
+{% set rating = seller_rating(book.user_id) %}
 <div class="container py-4">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -31,7 +32,11 @@
 
       <ul class="list-unstyled mb-4">
         <li class="mb-1"><i class="bi bi-stars text-warning me-2"></i>Condition: <strong>{{ book.condition }}</strong></li>
-        <li class="mb-1"><i class="bi bi-person-circle text-warning me-2"></i>Seller: <strong>{{ book.seller }}</strong></li>
+        <li class="mb-1"><i class="bi bi-person-circle text-warning me-2"></i>Seller:
+          <a href="{{ url_for('seller_page', seller_id=book.user_id) }}" class="fw-bold text-decoration-none">{{ book.seller }}</a>
+          {% if rating.count %}{{ stars(rating.avg) }} <small class="text-muted">{{ rating.avg }} ({{ rating.count }})</small>
+          {% else %}<small class="text-muted">· no reviews yet</small>{% endif %}
+        </li>
         <li><i class="bi bi-calendar3 text-warning me-2"></i>Listed on <span data-date="{{ book.created_at }}"></span></li>
       </ul>
 
@@ -44,12 +49,25 @@
         {% if user and user.id == book.user_id %}
           <a href="{{ url_for('book_edit', book_id=book.id) }}" class="btn btn-outline-primary"><i class="bi bi-pencil me-1"></i>Edit listing</a>
           <a href="{{ url_for('my_books') }}" class="btn btn-outline-secondary">Manage my listings</a>
-        {% elif book.status == 'sold' %}
-          <button class="btn btn-secondary" disabled>This book has been sold</button>
-        {% elif user %}
-          <a href="{{ url_for('chat_room', book_id=book.id, other_id=book.user_id) }}" class="btn btn-primary btn-lg"><i class="bi bi-chat-dots me-2"></i>Chat with seller</a>
         {% else %}
-          <a href="{{ url_for('login', next=request.path) }}" class="btn btn-primary btn-lg"><i class="bi bi-box-arrow-in-right me-2"></i>Log in to chat with seller</a>
+          {% if book.status == 'sold' %}
+            <button class="btn btn-secondary" disabled>This book has been sold</button>
+          {% elif user %}
+            <a href="{{ url_for('chat_room', book_id=book.id, other_id=book.user_id) }}" class="btn btn-primary btn-lg"><i class="bi bi-chat-dots me-2"></i>Chat with seller</a>
+          {% else %}
+            <a href="{{ url_for('login', next=request.path) }}" class="btn btn-primary btn-lg"><i class="bi bi-box-arrow-in-right me-2"></i>Log in to chat with seller</a>
+          {% endif %}
+
+          {% if user %}
+            <form action="{{ url_for('wishlist_toggle', book_id=book.id) }}" method="post" class="d-inline">
+              <input type="hidden" name="next" value="{{ request.path }}">
+              {% if in_wishlist(book.id) %}
+                <button class="btn btn-lg btn-danger" type="submit"><i class="bi bi-heart-fill me-2"></i>Saved</button>
+              {% else %}
+                <button class="btn btn-lg btn-outline-danger" type="submit"><i class="bi bi-heart me-2"></i>Save to wishlist</button>
+              {% endif %}
+            </form>
+          {% endif %}
         {% endif %}
       </div>
     </div>
